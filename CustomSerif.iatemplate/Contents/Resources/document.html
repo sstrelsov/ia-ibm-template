@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="styles/a11y-light.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="highlight.min.js"></script>
+
+    <script>
+      // 1) Basic approach when the document is ready
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("pre code").forEach((block) => {
+          hljs.highlightElement(block);
+        });
+      });
+
+      // 2) (Optional) Re-run if iA Writer does partial updates
+      document.addEventListener("ia-writer-change", function () {
+        document.querySelectorAll("pre code").forEach((block) => {
+          hljs.highlightElement(block);
+        });
+      });
+
+      function highlightAllBlocks() {
+        document.querySelectorAll("pre code").forEach((block) => {
+          hljs.highlightElement(block);
+        });
+      }
+    </script>
+  </head>
+  <body class="markdown-body" data-document></body>
+</html>
