@@ -6,14 +6,14 @@ import sys
 import yaml
 from docx import Document
 from docx.enum.style import WD_STYLE_TYPE
+from docx.oxml.ns import qn  # For removing theme attributes
 from docx.shared import Pt, RGBColor
 
 
 def ensure_built_in_styles_exist(doc, style_names):
     """
     Add a temporary paragraph for each built-in style so that
-    those styles are not 'latent' (some built-in styles can be 
-    hidden until they are first used).
+    those styles are not 'latent'.
     """
     for style_name in style_names:
         doc.add_paragraph("X", style=style_name)
@@ -36,8 +36,9 @@ def override_built_in_style(doc, base_name, custom_name,
                             font_color, space_before, space_after):
     """
     Override a built-in style in `doc.styles[base_name]`.
-    We rename it to `custom_name` visually, but keep the style ID
-    so Pandoc will still recognize it for e.g. "Heading 1".
+    - Keep style_id to ensure Pandoc recognizes it as "Heading 1" etc.
+    - Rename it visually to something like "IBM Heading 1."
+    - Strip theme attributes so Word doesn't override our chosen font.
     """
     try:
         style = doc.styles[base_name]
@@ -45,21 +46,25 @@ def override_built_in_style(doc, base_name, custom_name,
         print(f"[WARNING] style '{base_name}' not found. Skipping.")
         return
 
-    # Make sure it's a paragraph style
     if style.type != WD_STYLE_TYPE.PARAGRAPH:
         print(f"[WARNING] style '{base_name}' is not a paragraph style. Skipping.")
         return
 
-    # Save the style_id so we don't break Pandoc
     original_id = style.style_id
 
-    # Rename for visual clarity in Word (e.g. "IBM Heading 1"),
-    # but keep the same underlying style_id
+    # Rename visually but keep the underlying ID
     style.name = custom_name
     style.style_id = original_id
 
     font = style.font
-    font.name = "IBM Plex Sans"  # or "IBM Plex Serif", etc.
+    font.name = "IBM Plex Sans"
+
+    # Remove theme attributes from the run properties
+    rPr = font.element.rPr
+    if rPr is not None and rPr.rFonts is not None:
+        for theme_attrib in ["w:asciiTheme", "w:hAnsiTheme", "w:csTheme", "w:eastAsiaTheme"]:
+            rPr.rFonts.attrib.pop(qn(theme_attrib), None)
+
     font.size = Pt(font_size)
     font.bold = bold
     font.italic = italic
@@ -82,9 +87,7 @@ def create_reference_doc(config_file, reference_docx):
     """
     doc = Document()
 
-    # We might glean the needed built-in styles from the YAML
-    # but here we just ensure that the typical set (Normal, Title, etc.)
-    # definitely appear in the doc so we can override them.
+    # Typical built-in styles we want to ensure are not latent
     needed_styles = [
         "Normal", "Title", "Subtitle",
         "Heading 1", "Heading 2", "Heading 3",
@@ -92,14 +95,14 @@ def create_reference_doc(config_file, reference_docx):
     ]
     ensure_built_in_styles_exist(doc, needed_styles)
 
-    # 2) Load config from YAML
+    # Load config from YAML
     with open(config_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
 
-    # 3) For each style definition in YAML, override the built-in style
+    # Apply overrides
     for style_def in data.get("styles", []):
-        base_name = style_def["base_name"]      # e.g. "Heading 1"
-        custom_name = style_def["custom_name"]  # e.g. "IBM Heading 1"
+        base_name = style_def["base_name"]
+        custom_name = style_def["custom_name"]
 
         font_size = style_def["font_size"]
         bold = style_def.get("bold", False)
@@ -120,10 +123,10 @@ def create_reference_doc(config_file, reference_docx):
             space_after=space_after
         )
 
-    # 4) Remove dummy paragraphs
+    # Remove dummy paragraphs
     remove_temp_paragraphs(doc)
 
-    # 5) Save
+    # Save
     doc.save(reference_docx)
     print(f"[INFO] Created reference doc: {reference_docx}")
 
@@ -131,11 +134,13 @@ def create_reference_doc(config_file, reference_docx):
 def convert_md_to_word(input_md, output_docx, reference_docx):
     """
     Runs Pandoc with --reference-doc=reference_docx to generate final DOCX.
+    Also enables footnotes and highlight syntax with markdown+footnotes+mark.
     """
     cmd = [
         "pandoc",
+        "--from=markdown+footnotes+mark",  # Enable footnotes, ==highlight==, etc.
         input_md,
-        "--reference-doc=" + reference_docx,
+        f"--reference-doc={reference_docx}",
         "-o",
         output_docx
     ]
@@ -159,10 +164,10 @@ def main():
 
     reference_doc = "reference.docx"
 
-    # Create the reference doc with your custom IBM styles
+    # Create the reference doc with custom IBM styles
     create_reference_doc(config_file, reference_doc)
 
-    # Convert the Markdown to DOCX with Pandoc using that reference
+    # Convert the Markdown to DOCX with Pandoc
     convert_md_to_word(input_md, output_docx, reference_doc)
 
 
