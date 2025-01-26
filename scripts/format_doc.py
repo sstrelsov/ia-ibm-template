@@ -16,6 +16,7 @@ def ensure_built_in_styles_exist(doc, style_names):
     those styles are not 'latent'.
     """
     for style_name in style_names:
+        print(f"[INFO] Ensuring style '{style_name}' exists")
         doc.add_paragraph("X", style=style_name)
     return doc
 
@@ -36,9 +37,7 @@ def override_built_in_style(doc, base_name, custom_name,
                             font_color, space_before, space_after):
     """
     Override a built-in style in `doc.styles[base_name]`.
-    - Keep style_id to ensure Pandoc recognizes it as "Heading 1" etc.
-    - Rename it visually to something like "IBM Heading 1."
-    - Strip theme attributes so Word doesn't override our chosen font.
+    Keep style_id to ensure Pandoc recognizes it (e.g. "Heading 1", "Quote").
     """
     try:
         style = doc.styles[base_name]
@@ -52,14 +51,14 @@ def override_built_in_style(doc, base_name, custom_name,
 
     original_id = style.style_id
 
-    # Rename visually but keep the underlying ID
+    # Rename visually but keep the underlying ID for Pandoc
     style.name = custom_name
     style.style_id = original_id
 
     font = style.font
     font.name = "IBM Plex Sans"
 
-    # Remove theme attributes from the run properties
+    # Remove theme attributes so Word won't revert to theme fonts
     rPr = font.element.rPr
     if rPr is not None and rPr.rFonts is not None:
         for theme_attrib in ["w:asciiTheme", "w:hAnsiTheme", "w:csTheme", "w:eastAsiaTheme"]:
@@ -75,6 +74,42 @@ def override_built_in_style(doc, base_name, custom_name,
     pf = style.paragraph_format
     pf.space_before = Pt(space_before)
     pf.space_after = Pt(space_after)
+    
+def apply_table_styles(doc):
+    """
+    Apply custom styling to all tables in the Word document.
+    """
+    for table in doc.tables:
+        # Set table width
+        for col in table.columns:
+            for cell in col.cells:
+                cell.width = None  # You can adjust this to a fixed value if needed
+
+        # Add borders
+        for row in table.rows:
+            for cell in row.cells:
+                tc = cell._element
+                tcPr = tc.get_or_add_tcPr()
+                borders = OxmlElement('w:tcBorders')
+
+                for border_name in ["top", "left", "bottom", "right"]:
+                    border = OxmlElement(f"w:{border_name}")
+                    border.set("w:val", "single")  # Border style
+                    border.set("w:sz", "4")  # Border thickness
+                    border.set("w:space", "0")
+                    border.set("w:color", "000000")  # Black border
+                    borders.append(border)
+
+                tcPr.append(borders)
+
+        # Optional: Add shading for alternate rows
+        for i, row in enumerate(table.rows):
+            if i % 2 == 1:  # Apply shading to odd rows
+                for cell in row.cells:
+                    cell_shading = OxmlElement("w:shd")
+                    cell_shading.set("w:fill", "F2F2F2")  # Light gray shading
+                    cell._element.get_or_add_tcPr().append(cell_shading)
+
 
 
 def create_reference_doc(config_file, reference_docx):
@@ -92,6 +127,7 @@ def create_reference_doc(config_file, reference_docx):
         "Normal", "Title", "Subtitle",
         "Heading 1", "Heading 2", "Heading 3",
         "Heading 4", "Heading 5", "Heading 6",
+        "Quote"
     ]
     ensure_built_in_styles_exist(doc, needed_styles)
 
@@ -122,6 +158,10 @@ def create_reference_doc(config_file, reference_docx):
             space_before=space_before,
             space_after=space_after
         )
+        
+
+    # Apply table styles
+    apply_table_styles(doc)
 
     # Remove dummy paragraphs
     remove_temp_paragraphs(doc)

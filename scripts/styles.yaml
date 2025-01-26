@@ -79,3 +79,12 @@ styles:
     font_color: [0, 0, 0]
     space_before: 0
     space_after: 6
+
+  - custom_name: "IBM Quote"
+    base_name: "Quote"
+    font_size: 11
+    bold: false
+    italic: true
+    font_color: [60, 60, 60]
+    space_before: 6
+    space_after: 6
