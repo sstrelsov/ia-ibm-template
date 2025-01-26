@@ -12,3 +12,9 @@ To install onto iA writer on desktop:
 4. Drop in the file with extension `.iatemplate`
 
 After making changes locally, you must re-add the template. Be sure to cmd+shift+r to reload any lingering styles!
+
+To enable devtools on iA Writer previews, enter the below command in a terminal:
+
+```zsh
+defaults write pro.writer.mac WebKitDeveloperExtras -bool true
+```

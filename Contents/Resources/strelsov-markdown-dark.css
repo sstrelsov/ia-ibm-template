@@ -14,12 +14,7 @@ html.night-mode .markdown-body {
   word-wrap: break-word;
 }
 
-html.night-mode .markdown-body .octicon {
-  display: inline-block;
-  fill: currentColor;
-  vertical-align: text-bottom;
-}
-
+/* Anchor link icons on hover */
 html.night-mode .markdown-body h1:hover .anchor .octicon-link:before,
 html.night-mode .markdown-body h2:hover .anchor .octicon-link:before,
 html.night-mode .markdown-body h3:hover .anchor .octicon-link:before,
@@ -35,6 +30,7 @@ html.night-mode .markdown-body h6:hover .anchor .octicon-link:before {
   mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' version='1.1' aria-hidden='true'><path fill-rule='evenodd' d='M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z'></path></svg>");
 }
 
+/* Details, summary, hidden elements */
 html.night-mode .markdown-body details,
 html.night-mode .markdown-body figcaption,
 html.night-mode .markdown-body figure {
@@ -49,17 +45,14 @@ html.night-mode .markdown-body [hidden] {
   display: none !important;
 }
 
+/* Links */
 html.night-mode .markdown-body a {
   background-color: transparent;
   color: #58a6ff;
   text-decoration: none;
 }
 
-html.night-mode .markdown-body abbr[title] {
-  border-bottom: none;
-  text-decoration: underline dotted;
-}
-
+/* Bold, italic, headings, etc. */
 html.night-mode .markdown-body b,
 html.night-mode .markdown-body strong {
   font-weight: 600;
@@ -77,15 +70,13 @@ html.night-mode .markdown-body h1 {
   border-bottom: 1px solid #21262d;
 }
 
+/* Marking text */
 html.night-mode .markdown-body mark {
   background-color: rgba(187, 128, 9, 0.15);
   color: #c9d1d9;
 }
 
-html.night-mode .markdown-body small {
-  font-size: 90%;
-}
-
+/* Sub, sup */
 html.night-mode .markdown-body sub,
 html.night-mode .markdown-body sup {
   font-size: 75%;
@@ -102,6 +93,7 @@ html.night-mode .markdown-body sup {
   top: -0.5em;
 }
 
+/* Images */
 html.night-mode .markdown-body img {
   border-style: none;
   max-width: 100%;
@@ -109,6 +101,7 @@ html.night-mode .markdown-body img {
   background-color: #0d1117;
 }
 
+/* Inline code, pre, etc. */
 html.night-mode .markdown-body code,
 html.night-mode .markdown-body kbd,
 html.night-mode .markdown-body pre,
@@ -117,6 +110,7 @@ html.night-mode .markdown-body samp {
   font-size: 1em;
 }
 
+/* Horizontal rule */
 html.night-mode .markdown-body hr {
   box-sizing: content-box;
   overflow: hidden;
@@ -129,6 +123,7 @@ html.night-mode .markdown-body hr {
   border: 0;
 }
 
+/* Inputs */
 html.night-mode .markdown-body input {
   font: inherit;
   margin: 0;
@@ -170,6 +165,7 @@ html.night-mode .markdown-body ::-webkit-file-upload-button {
   font: inherit;
 }
 
+/* Hover states */
 html.night-mode .markdown-body a:hover {
   text-decoration: underline;
 }
@@ -185,6 +181,7 @@ html.night-mode .markdown-body hr::after {
   content: "";
 }
 
+/* Tables */
 html.night-mode .markdown-body table {
   border-spacing: 0;
   border-collapse: collapse;
@@ -199,6 +196,7 @@ html.night-mode .markdown-body th {
   padding: 0;
 }
 
+/* Details summary toggling */
 html.night-mode .markdown-body details summary {
   cursor: pointer;
 }
@@ -207,6 +205,7 @@ html.night-mode .markdown-body details:not([open]) > *:not(summary) {
   display: none !important;
 }
 
+/* Focus states */
 html.night-mode .markdown-body a,
 html.night-mode .markdown-body [role="button"],
 html.night-mode .markdown-body input[type="radio"],
@@ -224,6 +223,7 @@ html.night-mode .markdown-body input[type="checkbox"]:focus {
   box-shadow: none;
 }
 
+/* Keyboard focus highlighting */
 html.night-mode .markdown-body a:focus:not(:focus-visible),
 html.night-mode .markdown-body [role="button"]:focus:not(:focus-visible),
 html.night-mode .markdown-body input[type="radio"]:focus:not(:focus-visible),
@@ -251,6 +251,7 @@ html.night-mode .markdown-body input[type="checkbox"]:focus-visible {
   outline-offset: 0;
 }
 
+/* KBD styling */
 html.night-mode .markdown-body kbd {
   display: inline-block;
   padding: 3px 5px;
@@ -266,6 +267,7 @@ html.night-mode .markdown-body kbd {
   box-shadow: inset 0 -1px 0 rgba(110, 118, 129, 0.4);
 }
 
+/* Headings */
 html.night-mode .markdown-body h1,
 html.night-mode .markdown-body h2,
 html.night-mode .markdown-body h3,
@@ -306,11 +308,13 @@ html.night-mode .markdown-body h6 {
   color: #8b949e;
 }
 
+/* Paragraphs */
 html.night-mode .markdown-body p {
   margin-top: 0;
   margin-bottom: 10px;
 }
 
+/* Blockquotes */
 html.night-mode .markdown-body blockquote {
   margin: 0;
   padding: 0 1em;
@@ -318,6 +322,7 @@ html.night-mode .markdown-body blockquote {
   border-left: 0.25em solid #30363d;
 }
 
+/* Lists */
 html.night-mode .markdown-body ul,
 html.night-mode .markdown-body ol {
   margin-top: 0;
@@ -341,6 +346,7 @@ html.night-mode .markdown-body dd {
   margin-left: 0;
 }
 
+/* Inline code font */
 html.night-mode .markdown-body tt,
 html.night-mode .markdown-body code,
 html.night-mode .markdown-body samp {
@@ -349,6 +355,7 @@ html.night-mode .markdown-body samp {
   font-size: 12px;
 }
 
+/* Pre blocks */
 html.night-mode .markdown-body pre {
   margin-top: 0;
   margin-bottom: 0;
@@ -358,6 +365,7 @@ html.night-mode .markdown-body pre {
   word-wrap: normal;
 }
 
+/* Octicon handling */
 html.night-mode .markdown-body .octicon {
   display: inline-block;
   overflow: visible !important;
@@ -365,6 +373,7 @@ html.night-mode .markdown-body .octicon {
   fill: currentColor;
 }
 
+/* Placeholder text */
 html.night-mode .markdown-body ::placeholder {
   color: #6e7681;
   opacity: 1;
@@ -377,6 +386,7 @@ html.night-mode .markdown-body input::-webkit-inner-spin-button {
   appearance: none;
 }
 
+/* GitHub Linguist highlighting classes (pl-c, pl-k, etc.) */
 html.night-mode .markdown-body .pl-c {
   color: #8b949e;
 }
@@ -497,6 +507,7 @@ html.night-mode .markdown-body .pl-corl {
   color: #a5d6ff;
 }
 
+/* Catalyst data attributes */
 html.night-mode .markdown-body [data-catalyst] {
   display: block;
 }
@@ -505,6 +516,7 @@ html.night-mode .markdown-body [data-catalyst-inline] {
   display: inline;
 }
 
+/* Emojis */
 html.night-mode .markdown-body g-emoji {
   display: inline-block;
   min-width: 1ch;
@@ -521,6 +533,7 @@ html.night-mode .markdown-body g-emoji img {
   height: 1em;
 }
 
+/* Basic layout corrections */
 html.night-mode .markdown-body::before {
   display: table;
   content: "";
@@ -549,6 +562,7 @@ html.night-mode .markdown-body .absent {
   color: #f85149;
 }
 
+/* Anchors for headings */
 html.night-mode .markdown-body .anchor {
   float: left;
   padding-right: 4px;
@@ -572,14 +586,7 @@ html.night-mode .markdown-body details {
   margin-bottom: 16px;
 }
 
-html.night-mode .markdown-body blockquote > :first-child {
-  margin-top: 0;
-}
-
-html.night-mode .markdown-body blockquote > :last-child {
-  margin-bottom: 0;
-}
-
+/* Anchor icon visibility */
 html.night-mode .markdown-body h1 .octicon-link,
 html.night-mode .markdown-body h2 .octicon-link,
 html.night-mode .markdown-body h3 .octicon-link,
@@ -609,6 +616,7 @@ html.night-mode .markdown-body h6:hover .anchor .octicon-link {
   visibility: visible;
 }
 
+/* Inline code in headings */
 html.night-mode .markdown-body h1 tt,
 html.night-mode .markdown-body h1 code,
 html.night-mode .markdown-body h2 tt,
@@ -625,6 +633,7 @@ html.night-mode .markdown-body h6 code {
   font-size: inherit;
 }
 
+/* Summary headings */
 html.night-mode .markdown-body summary h1,
 html.night-mode .markdown-body summary h2,
 html.night-mode .markdown-body summary h3,
@@ -649,12 +658,14 @@ html.night-mode .markdown-body summary h2 {
   border-bottom: 0;
 }
 
+/* Lists without bullets or numbers */
 html.night-mode .markdown-body ul.no-list,
 html.night-mode .markdown-body ol.no-list {
   padding: 0;
   list-style-type: none;
 }
 
+/* Numeric list types */
 html.night-mode .markdown-body ol[type="1"] {
   list-style-type: decimal;
 }
@@ -679,6 +690,7 @@ html.night-mode .markdown-body ol ul {
   margin-bottom: 0;
 }
 
+/* Nested list paragraphs */
 html.night-mode .markdown-body li > p {
   margin-top: 16px;
 }
@@ -687,6 +699,7 @@ html.night-mode .markdown-body li + li {
   margin-top: 0.25em;
 }
 
+/* Definition lists */
 html.night-mode .markdown-body dl {
   padding: 0;
 }
@@ -704,6 +717,7 @@ html.night-mode .markdown-body dl dd {
   margin-bottom: 16px;
 }
 
+/* Table styling */
 html.night-mode .markdown-body table th {
   font-weight: 600;
 }
@@ -741,6 +755,7 @@ html.night-mode .markdown-body .emoji {
   background-color: transparent;
 }
 
+/* Frame alignment */
 html.night-mode .markdown-body span.frame {
   display: block;
   overflow: hidden;
@@ -829,6 +844,7 @@ html.night-mode .markdown-body span.float-right > span {
   text-align: right;
 }
 
+/* Inline code blocks */
 html.night-mode .markdown-body code,
 html.night-mode .markdown-body tt {
   padding: 0.2em 0.4em;
@@ -843,6 +859,7 @@ html.night-mode .markdown-body tt br {
   display: none;
 }
 
+/* Inline code within deleted text */
 html.night-mode .markdown-body del code {
   text-decoration: inherit;
 }
@@ -851,6 +868,7 @@ html.night-mode .markdown-body samp {
   font-size: 85%;
 }
 
+/* Pre tag code blocks */
 html.night-mode .markdown-body pre code {
   font-size: 100%;
 }
@@ -896,6 +914,7 @@ html.night-mode .markdown-body pre tt {
   border: 0;
 }
 
+/* CSV Table Data */
 html.night-mode .markdown-body .csv-data td,
 html.night-mode .markdown-body .csv-data th {
   padding: 5px;
@@ -923,6 +942,7 @@ html.night-mode .markdown-body .csv-data th {
   border-top: 0;
 }
 
+/* Footnotes */
 html.night-mode .markdown-body [data-footnote-ref]::before {
   content: "[";
 }
@@ -965,6 +985,7 @@ html.night-mode .markdown-body .footnotes .data-footnote-backref g-emoji {
   font-family: monospace;
 }
 
+/* Task lists */
 html.night-mode .markdown-body .task-list-item {
   list-style-type: none;
 }
@@ -997,10 +1018,12 @@ html.night-mode
   margin: 0 -1.6em 0.25em 0.2em;
 }
 
+/* Fix for date/time pickers */
 html.night-mode .markdown-body ::-webkit-calendar-picker-indicator {
   filter: invert(50%);
 }
 
+/* Remove default marker from details summary */
 html.night-mode .markdown-body details > summary::-webkit-details-marker {
   display: none;
 }
