@@ -2,45 +2,62 @@
 
 import subprocess
 import sys
+from typing import List, Tuple
 
 import yaml
 from docx import Document
+from docx.document import Document as DocxDocument
 from docx.enum.style import WD_STYLE_TYPE
-from docx.oxml.ns import qn  # For removing theme attributes
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 from docx.shared import Pt, RGBColor
+from docx.styles.style import BaseStyle
+from docx.table import Table
+from styles import apply_table_style
 
 
-def ensure_built_in_styles_exist(doc, style_names):
+def ensure_built_in_styles_exist(doc: DocxDocument, style_names: List[str]) -> None:
     """
-    Add a temporary paragraph for each built-in style so that
-    those styles are not 'latent'.
+    Add a temporary paragraph for each built-in *paragraph* style so they're not 'latent'.
+    DO NOT include table styles here if you're calling add_paragraph().
     """
     for style_name in style_names:
         print(f"[INFO] Ensuring style '{style_name}' exists")
-        doc.add_paragraph("X", style=style_name)
-    return doc
+        doc.add_paragraph("X", style=style_name)  # This raises an error if style_name is a table style
+    # Returns None (modifies doc in-place)
 
 
-def remove_temp_paragraphs(doc):
-    """Remove the dummy paragraphs that contain only 'X'."""
+def remove_temp_paragraphs(doc: DocxDocument) -> None:
+    """
+    Remove the dummy paragraphs that contain only 'X'.
+    """
     to_remove = []
-    for i, p in enumerate(doc.paragraphs):
-        if p.text.strip() == "X":
+    for i, paragraph in enumerate(doc.paragraphs):
+        if paragraph.text.strip() == "X":
             to_remove.append(i)
     for idx in reversed(to_remove):
         p = doc.paragraphs[idx]
-        p._element.getparent().remove(p._element)
+        parent = p._element.getparent()
+        parent.remove(p._element)
 
 
-def override_built_in_style(doc, base_name, custom_name,
-                            font_size, bold, italic,
-                            font_color, space_before, space_after):
+def override_built_in_style(
+    doc: DocxDocument,
+    base_name: str,
+    custom_name: str,
+    font_size: float,
+    bold: bool,
+    italic: bool,
+    font_color: Tuple[int, int, int],
+    space_before: float,
+    space_after: float
+) -> None:
     """
-    Override a built-in style in `doc.styles[base_name]`.
-    Keep style_id to ensure Pandoc recognizes it (e.g. "Heading 1", "Quote").
+    Override a built-in paragraph style in doc.styles[base_name].
+    Keep the original style_id to ensure Pandoc recognizes it.
     """
     try:
-        style = doc.styles[base_name]
+        style = doc.styles[base_name]  # type: BaseStyle
     except KeyError:
         print(f"[WARNING] style '{base_name}' not found. Skipping.")
         return
@@ -55,13 +72,13 @@ def override_built_in_style(doc, base_name, custom_name,
     style.name = custom_name
     style.style_id = original_id
 
+    # Font adjustments
     font = style.font
     font.name = "IBM Plex Sans"
-
-    # Remove theme attributes so Word won't revert to theme fonts
+    # Remove theme attributes
     rPr = font.element.rPr
     if rPr is not None and rPr.rFonts is not None:
-        for theme_attrib in ["w:asciiTheme", "w:hAnsiTheme", "w:csTheme", "w:eastAsiaTheme"]:
+        for theme_attrib in ("w:asciiTheme", "w:hAnsiTheme", "w:csTheme", "w:eastAsiaTheme"):
             rPr.rFonts.attrib.pop(qn(theme_attrib), None)
 
     font.size = Pt(font_size)
@@ -71,67 +88,31 @@ def override_built_in_style(doc, base_name, custom_name,
     r, g, b = font_color
     font.color.rgb = RGBColor(r, g, b)
 
+    # Spacing adjustments
     pf = style.paragraph_format
     pf.space_before = Pt(space_before)
     pf.space_after = Pt(space_after)
-    
-def apply_table_styles(doc):
+
+def create_reference_doc(config_file: str, reference_docx: str) -> None:
     """
-    Apply custom styling to all tables in the Word document.
-    """
-    for table in doc.tables:
-        # Set table width
-        for col in table.columns:
-            for cell in col.cells:
-                cell.width = None  # You can adjust this to a fixed value if needed
-
-        # Add borders
-        for row in table.rows:
-            for cell in row.cells:
-                tc = cell._element
-                tcPr = tc.get_or_add_tcPr()
-                borders = OxmlElement('w:tcBorders')
-
-                for border_name in ["top", "left", "bottom", "right"]:
-                    border = OxmlElement(f"w:{border_name}")
-                    border.set("w:val", "single")  # Border style
-                    border.set("w:sz", "4")  # Border thickness
-                    border.set("w:space", "0")
-                    border.set("w:color", "000000")  # Black border
-                    borders.append(border)
-
-                tcPr.append(borders)
-
-        # Optional: Add shading for alternate rows
-        for i, row in enumerate(table.rows):
-            if i % 2 == 1:  # Apply shading to odd rows
-                for cell in row.cells:
-                    cell_shading = OxmlElement("w:shd")
-                    cell_shading.set("w:fill", "F2F2F2")  # Light gray shading
-                    cell._element.get_or_add_tcPr().append(cell_shading)
-
-
-
-def create_reference_doc(config_file, reference_docx):
-    """
-    1) Create a fresh doc
-    2) Force built-in styles to appear
-    3) Override each built-in style from the YAML data
-    4) Remove dummy paragraphs
-    5) Save as reference.docx
+    1) Create a new .docx with python-docx
+    2) Force built-in paragraph styles to appear
+    3) Override each style from the YAML config
+    4) Remove dummy paragraphs/tables
+    5) Save as `reference_docx` (for Pandoc's --reference-doc)
     """
     doc = Document()
 
-    # Typical built-in styles we want to ensure are not latent
-    needed_styles = [
+    # Only paragraph styles here
+    needed_paragraph_styles = [
         "Normal", "Title", "Subtitle",
         "Heading 1", "Heading 2", "Heading 3",
         "Heading 4", "Heading 5", "Heading 6",
         "Quote"
     ]
-    ensure_built_in_styles_exist(doc, needed_styles)
+    ensure_built_in_styles_exist(doc, needed_paragraph_styles)
 
-    # Load config from YAML
+    # Read config
     with open(config_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
 
@@ -140,6 +121,7 @@ def create_reference_doc(config_file, reference_docx):
         base_name = style_def["base_name"]
         custom_name = style_def["custom_name"]
 
+        # Paragraph style
         font_size = style_def["font_size"]
         bold = style_def.get("bold", False)
         italic = style_def.get("italic", False)
@@ -158,12 +140,8 @@ def create_reference_doc(config_file, reference_docx):
             space_before=space_before,
             space_after=space_after
         )
-        
 
-    # Apply table styles
-    apply_table_styles(doc)
-
-    # Remove dummy paragraphs
+    # Cleanup
     remove_temp_paragraphs(doc)
 
     # Save
@@ -171,14 +149,14 @@ def create_reference_doc(config_file, reference_docx):
     print(f"[INFO] Created reference doc: {reference_docx}")
 
 
-def convert_md_to_word(input_md, output_docx, reference_docx):
+def convert_md_to_word(input_md: str, output_docx: str, reference_docx: str) -> None:
     """
-    Runs Pandoc with --reference-doc=reference_docx to generate final DOCX.
-    Also enables footnotes and highlight syntax with markdown+footnotes+mark.
+    Runs Pandoc with --reference-doc to generate the final .docx.
+    Also uses 'markdown+footnotes+mark' to enable footnotes & ==highlight==.
     """
     cmd = [
         "pandoc",
-        "--from=markdown+footnotes+mark",  # Enable footnotes, ==highlight==, etc.
+        "--from=markdown+footnotes+mark",
         input_md,
         f"--reference-doc={reference_docx}",
         "-o",
@@ -203,13 +181,10 @@ def main():
     output_docx = sys.argv[3]
 
     reference_doc = "reference.docx"
-
-    # Create the reference doc with custom IBM styles
     create_reference_doc(config_file, reference_doc)
-
-    # Convert the Markdown to DOCX with Pandoc
     convert_md_to_word(input_md, output_docx, reference_doc)
-
+    # Example usage
+    apply_table_style(output_docx, "Light Shading", output_docx)
 
 if __name__ == "__main__":
     main()

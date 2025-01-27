@@ -1,10 +1,8 @@
 ---
 title: "Markdown Syntax Guide"
 date: "2025-01-26"
-author: "Spencer"
+author: "Spencer Strelsov"
 ---
-
-# Markdown Syntax Guide
 
 This is a **sample Markdown file** to demonstrate commonly used **Markdown syntax** for creating rich text documents.
 
@@ -45,8 +43,7 @@ This is a **sample Markdown file** to demonstrate commonly used **Markdown synta
    1. Sub-item 2.1
    2. Sub-item 2.2
 
-[Visit OpenAI](https://www.openai.com)  
-![Markdown Logo](https://markdown-here.com/img/icon256.png)
+[Visit OpenAI Link](https://www.openai.com)
 
 ```python
 def greet(name):
@@ -58,7 +55,9 @@ print(greet("World"))
 > This is a blockquote.  
 > Blockquotes can span multiple lines.
 
-| Column 1 | Column 2 | Column 3 |
-| -------- | -------- | -------- |
-| Row 1    | Data     | More     |
-| Row 2    | Info     | Content  |
+Table:
+
+| Column 1 | Column 2                           | Column 3                           |
+| -------- | ---------------------------------- | ---------------------------------- |
+| Row 1    | This is an example of a table cell | This is an example of a table cell |
+| Row 2    | This is an example of a table cell | This is an example of a table cell |
