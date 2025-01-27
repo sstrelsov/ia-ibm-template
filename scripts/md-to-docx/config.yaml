@@ -1,3 +1,9 @@
+# config.yaml
+
+pandoc_options:
+  from: "markdown+footnotes+mark"
+  table_style: "Light Shading"
+
 styles:
   - custom_name: "IBM Title"
     base_name: "Title"
