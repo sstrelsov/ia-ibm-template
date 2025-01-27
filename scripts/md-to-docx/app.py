@@ -11,15 +11,15 @@ from doc_utils.table_style import apply_table_style
 def main():
     """
     Usage:
-       python app.py <config_file> <input_md> <output_docx>
+       python app.py <input_md> <output_docx>
     """
-    if len(sys.argv) < 4:
-        print("Usage: python app.py <config_file> <input_md> <output_docx>")
+    if len(sys.argv) < 3:
+        print("Usage: python app.py <input_md> <output_docx>")
         sys.exit(1)
 
-    config_file = sys.argv[1]
-    input_md = sys.argv[2]
-    output_docx = sys.argv[3]
+    config_file = './config.yaml'
+    input_md = sys.argv[1]
+    output_docx = sys.argv[2]
 
     # Load the config YAML
     with open(config_file, "r", encoding="utf-8") as f:
