@@ -30,7 +30,7 @@ styles:
     italic: false
     font_color: [0, 0, 0]
     space_before: 0
-    space_after: 0
+    space_after: 6
 
   - custom_name: "IBM Heading 1"
     base_name: "Heading 1"

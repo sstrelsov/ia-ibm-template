@@ -1,6 +1,25 @@
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from docx.text.paragraph import Paragraph
+
+
+def insert_paragraph_after_table(table, text=""):
+    """
+    Inserts a new paragraph *immediately* after the given table.
+    Returns a python-docx Paragraph object that you can then modify
+    (e.g. set text, style, etc.).
+    """
+    # Create a new <w:p> element
+    new_p = OxmlElement("w:p")
+
+    # Insert it right after the table's XML
+    table._element.addnext(new_p)
+
+    # Wrap the <w:p> element in a python-docx Paragraph object
+    paragraph = Paragraph(new_p, table._parent)
+    paragraph.text = text
+    return paragraph
 
 
 def apply_table_style(doc_path: str, table_style: str, save_as: str) -> None:
@@ -45,8 +64,11 @@ def apply_table_style(doc_path: str, table_style: str, save_as: str) -> None:
         tbl_look.set(qn("w:lastColumn"), "0")
         tbl_look.set(qn("w:noHBand"), "1")
         tbl_look.set(qn("w:noVBand"), "1")
+        
+        insert_paragraph_after_table(table)
 
         print(f"[INFO] Applied style '{table_style}' to table {i+1} with header-row only")
 
     doc.save(save_as)
+    print(f"[INFO] Updated document saved as '{save_as}'")
     print(f"[INFO] Updated document saved as '{save_as}'")
