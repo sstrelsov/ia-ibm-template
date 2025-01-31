@@ -83,7 +83,7 @@ def apply_table_style(doc_path: str, table_style: str, save_as: str) -> None:
         tbl_look.set(qn("w:noVBand"), "1")
         
         # Add paragraph before and after the table
-        insert_paragraph_before_table(table)
+        # insert_paragraph_before_table(table)
         insert_paragraph_after_table(table)
 
         print(f"[INFO] Applied style '{table_style}' to table {i+1} with header-row only")
