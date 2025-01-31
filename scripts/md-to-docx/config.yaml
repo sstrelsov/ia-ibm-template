@@ -38,8 +38,8 @@ styles:
     bold: true
     italic: false
     font_color: [0, 0, 0]
-    space_before: 0
-    space_after: 8
+    space_before: 10
+    space_after: 6
 
   - custom_name: "IBM Heading 2"
     base_name: "Heading 2"

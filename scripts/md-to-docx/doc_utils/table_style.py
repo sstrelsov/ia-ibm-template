@@ -22,9 +22,26 @@ def insert_paragraph_after_table(table, text=""):
     return paragraph
 
 
+def insert_paragraph_before_table(table, text=""):
+    """
+    Inserts a new paragraph *immediately* before the given table.
+    Returns a python-docx Paragraph object that you can then modify.
+    """
+    # Create a new <w:p> element
+    new_p = OxmlElement("w:p")
+
+    # Insert it right before the table's XML
+    table._element.addprevious(new_p)
+
+    # Wrap the <w:p> element in a python-docx Paragraph object
+    paragraph = Paragraph(new_p, table._parent)
+    paragraph.text = text
+    return paragraph
+
+
 def apply_table_style(doc_path: str, table_style: str, save_as: str) -> None:
     """
-    Open a Word doc, set each table to `table_style`, remove fixed widths,
+    Open a Word doc, set each table to table_style, remove fixed widths,
     set table width to 100%, and enable only header-row styling. Then save.
     """
     doc = Document(doc_path)
@@ -65,10 +82,11 @@ def apply_table_style(doc_path: str, table_style: str, save_as: str) -> None:
         tbl_look.set(qn("w:noHBand"), "1")
         tbl_look.set(qn("w:noVBand"), "1")
         
+        # Add paragraph before and after the table
+        insert_paragraph_before_table(table)
         insert_paragraph_after_table(table)
 
         print(f"[INFO] Applied style '{table_style}' to table {i+1} with header-row only")
 
     doc.save(save_as)
-    print(f"[INFO] Updated document saved as '{save_as}'")
     print(f"[INFO] Updated document saved as '{save_as}'")
