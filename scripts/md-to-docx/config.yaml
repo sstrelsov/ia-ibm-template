@@ -7,7 +7,7 @@ pandoc_options:
 styles:
   - custom_name: "IBM Title"
     base_name: "Title"
-    font_size: 28
+    font_size: 26
     bold: true
     italic: false
     font_color: [0, 0, 0]
@@ -34,7 +34,7 @@ styles:
 
   - custom_name: "IBM Heading 1"
     base_name: "Heading 1"
-    font_size: 24
+    font_size: 18
     bold: true
     italic: false
     font_color: [0, 0, 0]
@@ -43,7 +43,7 @@ styles:
 
   - custom_name: "IBM Heading 2"
     base_name: "Heading 2"
-    font_size: 18
+    font_size: 16
     bold: true
     italic: false
     font_color: [0, 0, 0]
