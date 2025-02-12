@@ -6,6 +6,72 @@ from docx.document import Document as DocxDocument
 from docx.enum.style import WD_STYLE_TYPE
 from docx.oxml.ns import qn
 from docx.shared import Pt, RGBColor
+from docx.oxml import parse_xml
+
+def ensure_hyperlink_style_exists(doc: Document) -> None:
+    """
+    Create a dummy paragraph with a run that uses the 'Hyperlink' style,
+    so that the style is forced to appear in the document.
+    """
+    try:
+        para = doc.add_paragraph()
+        run = para.add_run("dummy", style="Hyperlink")
+    except KeyError:
+        print("[INFO] 'Hyperlink' style not found by dummy run; will add it manually.")
+
+def add_hyperlink_style(doc):
+    """
+    Manually add a Hyperlink character style to the document.
+    """
+    hyperlink_style_xml = r'''
+    <w:style w:type="character" w:styleId="Hyperlink"
+      xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+      <w:name w:val="Hyperlink"/>
+      <w:basedOn w:val="DefaultParagraphFont"/>
+      <w:link w:val="DefaultParagraphFont"/>
+      <w:uiPriority w:val="99"/>
+      <w:unhideWhenUsed/>
+      <w:qFormat/>
+      <w:rPr>
+        <w:color w:val="0000FF"/>
+        <w:u w:val="single"/>
+      </w:rPr>
+    </w:style>
+    '''
+    styles_element = doc.styles.element
+    styles_element.append(parse_xml(hyperlink_style_xml))
+ 
+
+def override_hyperlink_style(
+    doc: Document,
+    custom_name: str = "IBM Hyperlink",
+    font_size: float = 11,
+    underline: bool = True,
+    font_color: Tuple[int, int, int] = (0, 0, 255)
+) -> None:
+    """
+    Override the built-in 'Hyperlink' character style.
+    """
+    try:
+        style = doc.styles["Hyperlink"]
+    except KeyError:
+        print("[WARNING] 'Hyperlink' style not found. Skipping override.")
+        return
+
+    if style.type != WD_STYLE_TYPE.CHARACTER:
+        print("[WARNING] 'Hyperlink' style is not a character style. Skipping override.")
+        return
+
+    # Change the style's name if desired (this is optional)
+    original_id = style.style_id
+    style.name = custom_name
+    style.style_id = original_id
+
+    font = style.font
+    font.size = Pt(font_size)
+    font.underline = underline
+    r, g, b = font_color
+    font.color.rgb = RGBColor(r, g, b)
 
 
 def ensure_built_in_styles_exist(doc: DocxDocument, style_names: List[str]) -> None:
@@ -127,6 +193,9 @@ def create_reference_doc(config: dict, reference_docx: str) -> None:
         )
 
     # Remove dummy paragraphs
+    ensure_hyperlink_style_exists(doc)
+    add_hyperlink_style(doc)
+    override_hyperlink_style(doc)
     remove_temp_paragraphs(doc)
 
     # Save
