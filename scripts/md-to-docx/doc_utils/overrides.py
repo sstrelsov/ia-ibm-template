@@ -4,9 +4,10 @@ from typing import List, Tuple
 from docx import Document
 from docx.document import Document as DocxDocument
 from docx.enum.style import WD_STYLE_TYPE
+from docx.oxml import parse_xml
 from docx.oxml.ns import qn
 from docx.shared import Pt, RGBColor
-from docx.oxml import parse_xml
+
 
 def ensure_hyperlink_style_exists(doc: Document) -> None:
     """

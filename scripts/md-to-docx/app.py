@@ -1,11 +1,25 @@
 #!/usr/bin/env python3
 
 import os
+import subprocess  # Needed for non-Windows platforms
 import sys
 
 import yaml
+
 from doc_utils.overrides import convert_md_to_word, create_reference_doc
 from doc_utils.table_style import apply_table_style
+
+
+def open_document(filepath):
+    """
+    Open the document using the default application based on the operating system.
+    """
+    if sys.platform.startswith('win'):
+        os.startfile(filepath)
+    elif sys.platform.startswith('darwin'):
+        subprocess.call(['open', filepath])
+    else:
+        subprocess.call(['xdg-open', filepath])
 
 
 def main():
@@ -50,6 +64,9 @@ def main():
         if os.path.exists(reference_docx):
             os.remove(reference_docx)
             print(f"[INFO] Deleted the reference DOCX: {reference_docx}")
+
+    # Automatically open the generated Word document
+    open_document(output_docx)
 
 
 if __name__ == "__main__":
