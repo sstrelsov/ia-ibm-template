@@ -23,12 +23,10 @@ defaults write pro.writer.mac WebKitDeveloperExtras -bool true
 
 Python script for converting markdown to docx, with specified formatting. If you export directly from iA Writer, the styles in Word are wack. Running the md file through this script, however, leads to a beautiful docx file:
 
-In the `/scripts` dir, `styles.yaml` specify the styles for the word doc. Included is `test.md` to demonstrate what the output looks like. In the scripts dir, run
+### Instructions
 
-```bash
-python format_doc.py styles.yaml test.md output.docx
-```
+1. Specify a dir containing markdown files in a .env file as `MARKDOWN_DIR`
+2. Run `python app.py` and follow the multiple choice prompts
+3. The docx should automatically open
 
-- `styles.yaml` specifies the styles
-- `test.md` is the input markdown file (included in this repo as an example)
-- `output.docx` is the user-specified name of the output file
+In the `/scripts` dir, `styles.yaml` specify the styles for the word doc. Included is `test.md` to demonstrate what the output looks like
